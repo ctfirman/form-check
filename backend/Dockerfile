@@ -2,16 +2,21 @@
 # https://hub.docker.com/_/python
 FROM python:3.9-slim
 
+ENV PYTHONUNBUFFERED True
+
 # Install production dependencies.
-RUN pip install -r requirements.txt
+# RUN pip install -r requirements.txt
 
 # Copy local code to the container image.
-WORKDIR /app
-COPY . .
+ENV APP_HOME /app
+WORKDIR $APP_HOME
+COPY . ./
 
 # Service must listen to $PORT environment variable.
 # This default value facilitates local development.
 ENV PORT 8080
+
+RUN pip install Flask gunicorn
 
 # Run the web service on container startup. Here we use the gunicorn
 # webserver, with one worker process and 8 threads.
