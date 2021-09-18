@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <ArduinoJson.h>
 
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
@@ -11,16 +12,17 @@
 Adafruit_MPU6050 mpu;
 
 int onboardLED = 2;
+float gyro_X;
+float gyro_X_error = 0.01;
 
 void setup(){
 
   pinMode(onboardLED, OUTPUT);
 
   Serial.begin(9600);
-  // Serial.begin(115200);
   delay(4000);
-  WiFi.begin(ssid, password);
 
+  WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED){
     delay(1000);
     Serial.println("Connecting to Wifi...");
@@ -38,55 +40,53 @@ void setup(){
   mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
 
   Serial.println("Setup complete \n");
+  delay(4000);
 }
 
 void loop(){
-  digitalWrite(onboardLED, HIGH);
-  Serial.println("This prints every few seconds");
-  delay(500);
-  digitalWrite(onboardLED, LOW);
+  // digitalWrite(onboardLED, HIGH);
+  // // Serial.println("This prints every few seconds");
+  // delay(500);
+  // digitalWrite(onboardLED, LOW);
 
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
 
-  // Serial.print("Acceleration X: ");
-  // Serial.print(a.acceleration.x);
-  // Serial.print(", Y: ");
-  // Serial.print(a.acceleration.y);
-  // Serial.print(", Z: ");
-  // Serial.print(a.acceleration.z);
-  // Serial.println(" m/s^2");
+  // // Serial.print("Rotation X: ");
+  // // Serial.println(g.gyro.x);
+  // // Serial.print(", Y: ");
+  // // Serial.println(g.gyro.y);
 
-  Serial.print("Rotation X: ");
-  Serial.print(g.gyro.x);
-  Serial.print(", Y: ");
-  Serial.print(g.gyro.y);
-  Serial.print(", Z: ");
-  Serial.print(g.gyro.z);
-  Serial.println(" rad/s");
-
-  // Serial.print("Temperature: ");
-  // Serial.print(temp.temperature);
-  // Serial.println(" degC");
-
-  Serial.println("");
-  delay(500);
-
-  // if (WiFi.status() == WL_CONNECTED){
-    
-  //   HTTPClient client;
-  //   client.begin("https://reqres.in/api/users/2");
-  //   int httpCode = client.GET();  
-
-  //   if (httpCode > 0){
-  //     String payload = client.getString();
-
-  //     Serial.println("StatusCode:" + String(httpCode));
-  //     Serial.println(payload);
-  //   }
-
-  // }else{
-  //   Serial.println("Connection Lost");
+  // float gyro_X_temp = g.gyro.x + 2.16;
+  // if (abs(gyro_X_temp) > gyro_X_error){
+  //   gyro_X += (gyro_X_temp/50.00) * (180 / 3.1415);
   // }
+
+  // Serial.print(gyro_X_temp);
+  // Serial.print("      ");
+  // Serial.println(gyro_X);
+
+  // Serial.print(", Z: ");
+  // Serial.print(g.gyro.z);
+  // Serial.println(" rad/s");
+
+  // Serial.println(a.acceleration.y);
+  
+  if (WiFi.status() == WL_CONNECTED){
+    
+    HTTPClient client;
+    client.begin("https://reqres.in/api/users/2");
+    int httpCode = client.GET();  
+
+    if (httpCode > 0){
+      String payload = client.getString();
+
+      Serial.println("StatusCode:" + String(httpCode));
+      Serial.println(payload);
+    }
+
+  }else{
+    Serial.println("Connection Lost");
+  }
   
 }
