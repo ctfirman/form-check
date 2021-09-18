@@ -18,8 +18,5 @@ def post_data():
     all_data[data['id']] = data
     return(jsonify(data))
 
-
-    return "The data is being posted into database"
-
 if __name__ == "__main__":
     app.run(host="localhost", port=8080, debug=True)
