@@ -3,14 +3,19 @@ import json
 
 app = Flask(__name__)
 
+all_data = {}
 
-# @app.route('/')
-# def hello():
-#     return 'Hello, World!'
+@app.route('/', methods=["GET"])
+def hello():
+    return jsonify(all_data)
 
 @app.route('/', methods=["POST"])
 def post_data():
     data = request.json
+    if data['id'] in all_data:
+        return jsonify({"error": "id already exists"})
+    
+    all_data[data['id']] = data
     return(jsonify(data))
 
 
