@@ -161,3 +161,4 @@ yarn-error.log*
 fc-hardware/include/Secrets.h
 
 .idea
+package-lock.json
