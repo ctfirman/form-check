@@ -6,11 +6,11 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
+#include "Secrets.h"
+
 Adafruit_MPU6050 mpu;
 
 int onboardLED = 2;
-const char *ssid = "BELL711";
-const char *password = "DEF7CDCA";
 
 void setup(){
 
