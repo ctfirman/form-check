@@ -1,15 +1,20 @@
-# Use Python37
-FROM python:3.7
+# Use an official lightweight Python image.
+# https://hub.docker.com/_/python
+FROM python:3.9-slim
 
-# Copy requirements.txt to the docker image and install packages
-COPY requirements.txt /
-RUN pip install -r requirements.txt# Set the WORKDIR to be the folder
-COPY . /app
+# Install production dependencies.
+RUN pip install -r requirements.txt
 
-# Expose port 5000
-EXPOSE 5000
-ENV PORT 5000
+# Copy local code to the container image.
 WORKDIR /app
+COPY . .
 
-# Use gunicorn as the entrypoint
-CMD exec gunicorn --bind :$PORT app:app --workers 1 --threads 1 --timeout 60
+# Service must listen to $PORT environment variable.
+# This default value facilitates local development.
+ENV PORT 8080
+
+# Run the web service on container startup. Here we use the gunicorn
+# webserver, with one worker process and 8 threads.
+# For environments with multiple CPU cores, increase the number of workers
+# to be equal to the cores available.
+CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 0 app:app
