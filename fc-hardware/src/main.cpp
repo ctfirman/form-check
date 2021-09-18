@@ -13,16 +13,18 @@ Adafruit_MPU6050 mpu;
 
 int onboardLED = 2;
 
+const int SIZE_OF_ARRAY = 50;
+
 // gyroscope settings
 float gyro_X;
 float gyro_X_error = 0.01;
 
-char json_output[128];
+char json_output[256];
 
 // used for waiting
 unsigned long start_time;
 unsigned long current_time;
-const int period = 15000;
+const int period = 0;
 
 // decalre functions
 void post_request();
@@ -58,17 +60,23 @@ void setup(){
 
 void loop(){
 
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
+  StaticJsonDocument<512> doc;
+  JsonArray data = doc.createNestedArray("data");
 
-  // float gyro_X_temp = g.gyro.x + 2.16;
-  // if (abs(gyro_X_temp) > gyro_X_error){
-  //   gyro_X += (gyro_X_temp/50.00) * (180 / 3.1415);
-  // }
+  for (int i = 0; i < SIZE_OF_ARRAY; i++){
 
-  // Serial.print(gyro_X_temp);
-  // Serial.print("      ");
-  // Serial.println(gyro_X);
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
+
+    float gyro_X_temp = g.gyro.x + 2.16;
+    if (abs(gyro_X_temp) > gyro_X_error){
+      gyro_X += (gyro_X_temp/50.00) * (180 / 3.1415);
+    }
+
+    data.add(gyro_X);
+    delay(200);
+  }
+  serializeJson(doc, json_output);
   
   post_request();
 
@@ -87,19 +95,8 @@ void post_request(){
     HTTPClient client;
     client.begin("https://form-check-hixwog3m7q-uc.a.run.app/");
     client.addHeader("Content-Type", "application/json");
-
-    // compute the required size
-    const size_t CAPACITY = JSON_ARRAY_SIZE(1);
-
-    // allocate the memory for the document
-    StaticJsonDocument<CAPACITY> doc;
-
-    // create an empty array
-    JsonObject object = doc.to<JsonObject>();
-    object["data"] = "Spongebob";
     
     // Format the data correctly
-    serializeJson(doc, json_output);
 
     int httpCode = client.POST(String(json_output));  
 
