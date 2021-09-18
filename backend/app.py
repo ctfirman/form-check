@@ -10,9 +10,6 @@ def hello():
 @app.route('/pushData')
 def get_data():
     return "The data is being posted into database"
-    
-    
-
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(ssl_context="adhoc", host="0.0.0.0", port=5000)
