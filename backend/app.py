@@ -12,4 +12,4 @@ def get_data():
     return "The data is being posted into database"
 
 if __name__ == "__main__":
-    app.run(ssl_context="adhoc", host="0.0.0.0", port=5000)
+    app.run(host="localhost", port=8080, debug=True)
