@@ -158,3 +158,4 @@ yarn-error.log*
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+fc-hardware/include/Secrets.h
