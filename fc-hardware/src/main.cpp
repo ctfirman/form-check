@@ -12,11 +12,14 @@
 Adafruit_MPU6050 mpu;
 
 int onboardLED = 2;
+
+// gyroscope settings
 float gyro_X;
 float gyro_X_error = 0.01;
 
 char json_output[128];
 
+// used for waiting
 unsigned long start_time;
 unsigned long current_time;
 const int period = 15000;
@@ -25,8 +28,6 @@ const int period = 15000;
 void post_request();
 
 void setup(){
-
-
   Serial.begin(9600);
   delay(4000);
 
@@ -48,24 +49,17 @@ void setup(){
   mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
 
   pinMode(onboardLED, OUTPUT);
+
+  // Initialize the start time
   start_time = millis();
   Serial.println("Setup complete \n");
   delay(4000);
 }
 
 void loop(){
-  // digitalWrite(onboardLED, HIGH);
-  // // Serial.println("This prints every few seconds");
-  // delay(500);
-  // digitalWrite(onboardLED, LOW);
 
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
-
-  // // Serial.print("Rotation X: ");
-  // // Serial.println(g.gyro.x);
-  // // Serial.print(", Y: ");
-  // // Serial.println(g.gyro.y);
 
   // float gyro_X_temp = g.gyro.x + 2.16;
   // if (abs(gyro_X_temp) > gyro_X_error){
@@ -75,38 +69,36 @@ void loop(){
   // Serial.print(gyro_X_temp);
   // Serial.print("      ");
   // Serial.println(gyro_X);
-
-  // Serial.print(", Z: ");
-  // Serial.print(g.gyro.z);
-  // Serial.println(" rad/s");
-
-  // Serial.println(a.acceleration.y);
   
   post_request();
 
 }
 
 void post_request(){
+  // will only send data after a certain period
+  // does not need to pause the program in order to wait
+
   current_time = millis();
   if (WiFi.status() == WL_CONNECTED && current_time - start_time >= period){
     
     digitalWrite(onboardLED, HIGH);
 
+    // create a endpoint
     HTTPClient client;
-    client.begin("https://reqres.in/api/users");
+    client.begin("https://form-check-hixwog3m7q-uc.a.run.app/");
     client.addHeader("Content-Type", "application/json");
 
     // compute the required size
-    const size_t CAPACITY = JSON_ARRAY_SIZE(2);
+    const size_t CAPACITY = JSON_ARRAY_SIZE(1);
 
     // allocate the memory for the document
     StaticJsonDocument<CAPACITY> doc;
 
     // create an empty array
     JsonObject object = doc.to<JsonObject>();
-    object["name"] = "Spongebob";
-    object["job"] = "fry cook";
+    object["data"] = "Spongebob";
     
+    // Format the data correctly
     serializeJson(doc, json_output);
 
     int httpCode = client.POST(String(json_output));  
