@@ -2,6 +2,9 @@ from flask import Flask, jsonify, request
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+from datetime import datetime
+import numpy as np
+from scipy.signal import argrelextrema
 
 # Use the application default credentials
 cred = credentials.ApplicationDefault()
@@ -15,12 +18,95 @@ app = Flask(__name__)
 
 @app.route('/', methods=["GET"])
 def hello():
+    doc_ref = db.collection(u'users').document(u'alovelace')
+    doc_ref.set({
+        u'first': u'Ada',
+        u'last': u'Lovelace',
+        u'born': 1815
+    })
     return "Hello"
+
+
 
 @app.route('/', methods=["POST"])
 def post_data():
+    """
+    data = {"data": [1,2,3,4,5,...50]}
+    :return:
+    """
     data = request.json
+
+    date_time = datetime.now()
+    current_date = date_time.strftime("%Y-%m-%d")
+
+    doc_ref = db.collection(u'pushups').document(current_date)
+    doc_ref.set({
+        u'data': data["data"]
+    }, merge=True)
     return jsonify(data)
+
+
+@app.route('/<date>', methods=["GET"])
+def get_date(date):
+    doc_ref = db.collection(u'pushups').document(date)
+    doc = doc_ref.get()
+
+    if doc.exists:
+        data_doc = doc.to_dict()
+        values_array = data_doc["data"]
+
+        #gives array of indeces of local maxima, aka idedally top of the pushup, and second line for minima
+        max_ind = argrelextrema(values_array, np.greater)
+        min_ind = argrelextrema(values_array, np.less)
+
+        good_pushups_top = []
+        good_pushups_bot = []
+        bad_pushups = []
+        total_pushups = len(min_ind)
+
+        for counter, index in enumerate(max_ind):
+            degree = values_array[index]
+            percentage = (degree/90)*100
+            if percentage >= 90:
+                good_pushups_top.append([counter, percentage])
+            else:
+                bad_pushups.append([counter, percentage])
+
+        for counter, index in enumerate(min_ind):
+            degree = values_array[index]
+            percentage = (degree/90)*100
+            if percentage <= 10:
+                good_pushups_bot.append([counter, 100-percentage])
+            else:
+                bad_pushups.append([counter, 100-percentage])
+
+        good_counter = 0
+        final_good_pushups = []
+
+        for i in good_pushups_top:
+            for j in good_pushups_bot:
+                if i[0] == j[0]:
+                    good_counter += good_counter
+                    average_percentage = (i[1]+j[1])/2
+                    final_good_pushups.append([i[0], average_percentage])
+
+        bad_counter = total_pushups - good_counter
+
+        print(total_pushups)
+        print(good_counter)
+        print(final_good_pushups)
+        print(bad_counter)
+        print(bad_pushups)
+
+        return jsonify({"Total Pushups":total_pushups, "Number of Good Pushups":good_counter,
+                        "Good Pushups Data":final_good_pushups, "Number of Bad Pushups":bad_counter,
+                        "Bad Pushups Data":bad_pushups})
+
+    else:
+        return jsonify({"error":"document not found"})
+
+
+
 
 if __name__ == "__main__":
     app.run(host="localhost", port=8080, debug=True)
