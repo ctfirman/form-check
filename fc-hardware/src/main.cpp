@@ -12,14 +12,15 @@
 Adafruit_MPU6050 mpu;
 
 int onboardLED = 2;
-
-const int SIZE_OF_ARRAY = 50;
+int greenLED = 14;
 
 // gyroscope settings
 float gyro_X = 0;
 float gyro_X_error = 0.025;
 float Time_Now, Time_Previous, elapsedTime;
 
+// JSON settings
+const int SIZE_OF_ARRAY = 1000;
 char json_output[2048];
 
 // used for waiting
@@ -34,6 +35,7 @@ void setup(){
   Serial.begin(9600);
   delay(4000);
 
+  // from Secrets.h
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED){
     delay(1000);
@@ -52,6 +54,7 @@ void setup(){
   mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
 
   pinMode(onboardLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
 
   // Initialize the start time
   start_time = millis();
@@ -60,10 +63,12 @@ void setup(){
 }
 
 void loop(){
+  digitalWrite(greenLED, HIGH);
 
   StaticJsonDocument<2048> doc;
   JsonArray data = doc.createNestedArray("data");
 
+  // store the 
   for (int i = 0; i < SIZE_OF_ARRAY; i++){
 
     sensors_event_t a, g, temp;
@@ -78,15 +83,22 @@ void loop(){
       gyro_X += angular_velocity*elapsedTime;
     }
 
-    Serial.print(angular_velocity);
-    Serial.print("     ");
-    Serial.println(180*gyro_X);
-    //data.add(gyro_X);
-    delay(5);
+    // used for debuging
+    // Serial.print(angular_velocity);
+    // Serial.print("     ");
+    // Serial.println(180*gyro_X);
+
+    if (i%10 == 0){
+      data.add(180*gyro_X);
+      Serial.print(angular_velocity);
+      Serial.print("     ");
+      Serial.println(180*gyro_X);
+    }
+    delay(10);
   }
   serializeJson(doc, json_output);
   
-  //post_request();
+  post_request();
 
 }
 
