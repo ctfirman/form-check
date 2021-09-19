@@ -29,6 +29,7 @@ char json_output[2048];
 // unsigned long current_time;
 // const int period = 0;
 
+// Thanks to  Andreas Spiess: https://github.com/SensorsIot/ESP32-Dual-Core
 TaskHandle_t Task1, Task2;
 SemaphoreHandle_t baton;
 
