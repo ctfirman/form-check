@@ -5,12 +5,13 @@
 # print(json.dumps(response.json(), indent=3))
 # print(response)
 
+
 from scipy.signal import argrelextrema
 import numpy as np
 
 values_array1 = [0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 1, 1, 2, 3, 4, 5, 6, 7, 7, 8, 6, 5, 4]
 values_array = np.array(values_array1)
-
+#create local max and mins
 max_ind = argrelextrema(values_array, np.greater)
 min_ind = argrelextrema(values_array, np.less)
 print(max_ind)
