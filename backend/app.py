@@ -38,43 +38,51 @@ def post_data():
 
     date_time = datetime.now()
     current_date = date_time.strftime("%Y-%m-%d")
+    current_time = date_time.strftime("%H:%M:%S")
 
-    doc_ref = db.collection(u'pushups').document(current_date)
-    doc_ref.set({
-        u'data': data["data"]
-    }, merge=True)
+    data1 = {current_time : {u'data': data["data"]}}
+    doc_ref = db.collection(u'pushups_tirth').document(current_date)
+    doc_ref.set(data1, merge=True)
     return jsonify(data)
 
 
 @app.route('/<date>', methods=["GET"])
-def get_date(date):
+def get_data(date):
     doc_ref = db.collection(u'pushups').document(date)
     doc = doc_ref.get()
 
+    values_list = []
+
     if doc.exists:
         data_doc = doc.to_dict()
-        values_array = data_doc["data"]
+        #return jsonify(data_doc)
+        for key in data_doc:
+            values_list.extend(data_doc[key]["data"])
+
+        values_array = np.array(values_list)
 
         #gives array of indeces of local maxima, aka idedally top of the pushup, and second line for minima
         max_ind = argrelextrema(values_array, np.greater)
         min_ind = argrelextrema(values_array, np.less)
 
+        #return {'thing': values_array.tolist()}
+
         good_pushups_top = []
         good_pushups_bot = []
         bad_pushups = []
-        total_pushups = len(min_ind)
+        total_pushups = len(min_ind[0])
 
-        for counter, index in enumerate(max_ind):
+        for counter, index in enumerate(max_ind[0]):
             degree = values_array[index]
-            percentage = (degree/90)*100
+            percentage = (abs(degree)/90)*100
             if percentage >= 90:
                 good_pushups_top.append([counter, percentage])
             else:
                 bad_pushups.append([counter, percentage])
 
-        for counter, index in enumerate(min_ind):
+        for counter, index in enumerate(min_ind[0]):
             degree = values_array[index]
-            percentage = (degree/90)*100
+            percentage = (abs(degree)/90)*100
             if percentage <= 10:
                 good_pushups_bot.append([counter, 100-percentage])
             else:
@@ -92,21 +100,20 @@ def get_date(date):
 
         bad_counter = total_pushups - good_counter
 
-        print(total_pushups)
-        print(good_counter)
-        print(final_good_pushups)
-        print(bad_counter)
-        print(bad_pushups)
+        # print(total_pushups)
+        # print(good_counter)
+        # print(final_good_pushups)
+        # print(bad_counter)
+        # print(bad_pushups)
 
-        return jsonify({"Total Pushups":total_pushups, "Number of Good Pushups":good_counter,
-                        "Good Pushups Data":final_good_pushups, "Number of Bad Pushups":bad_counter,
-                        "Bad Pushups Data":bad_pushups})
+        #return {'thing': final_good_pushups}
+
+        return jsonify({"totalPushups":total_pushups, "numberOfGoodPushups":good_counter,
+                        "goodPushupsData":final_good_pushups, "numberOfBadPushups":bad_counter,
+                        "badPushupsData":bad_pushups})
 
     else:
         return jsonify({"error":"document not found"})
-
-
-
 
 if __name__ == "__main__":
     app.run(host="localhost", port=8080, debug=True)
