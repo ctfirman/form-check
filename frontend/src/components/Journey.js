@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "../css/Journey.css";
+import GetData from "./GetData";
 
 function Journey() {
   const [date, setDate] = useState(new Date());
@@ -11,7 +12,7 @@ function Journey() {
       console.log(!check.includes(value));
       setCheck([...check, value]);
     }
-    console.log(check);
+    console.log(check[check.length - 1]);
   };
   // yyyy-mm-dd
   return (
@@ -31,6 +32,9 @@ function Journey() {
       </div>
       <div className="Journey__Progress">
         <p>Your Progress</p>
+      </div>
+      <div className="Journey__getRequest">
+        <GetData date={check[check.length - 1]} />
       </div>
     </>
   );
