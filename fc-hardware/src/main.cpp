@@ -17,7 +17,7 @@ const int SIZE_OF_ARRAY = 50;
 
 // gyroscope settings
 float gyro_X = 0;
-float gyro_X_error = 0.01;
+float gyro_X_error = 0.025;
 float Time_Now, Time_Previous, elapsedTime;
 
 char json_output[256];
@@ -80,7 +80,7 @@ void loop(){
 
     Serial.print(angular_velocity);
     Serial.print("     ");
-    Serial.println(gyro_X);
+    Serial.println(180*gyro_X);
     //data.add(gyro_X);
     delay(5);
   }
