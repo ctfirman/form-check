@@ -4,8 +4,6 @@ FROM python:3.9-slim
 
 ENV PYTHONUNBUFFERED True
 
-# Install production dependencies.
-# RUN pip install -r requirements.txt
 
 # Copy local code to the container image.
 ENV APP_HOME /app
@@ -16,7 +14,9 @@ COPY . ./
 # This default value facilitates local development.
 ENV PORT 8080
 
-RUN pip install Flask gunicorn
+# Install production dependencies.
+# RUN pip install Flask gunicorn
+RUN pip install -r requirements.txt
 
 # Run the web service on container startup. Here we use the gunicorn
 # webserver, with one worker process and 8 threads.
