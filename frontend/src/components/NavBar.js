@@ -9,6 +9,8 @@ import FitnessCenterRoundedIcon from "@mui/icons-material/FitnessCenterRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import navBarPic from "../img/JTN-HTNLogo.png";
 import { Link, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const useStyles = makeStyles((theme) => ({
   root: {
