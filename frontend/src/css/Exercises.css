@@ -1,0 +1,12 @@
+.Exercises__Names {
+  padding: 2%;
+  display: flex;
+  padding: 7em;
+  justify-content: center;
+}
+
+.Exercises__Background {
+  background-image: linear-gradient(#b4c8d9, #d9c5b4);
+  background-color: cover;
+  height: 500px;
+}

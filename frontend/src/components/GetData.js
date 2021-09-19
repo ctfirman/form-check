@@ -32,14 +32,7 @@ function GetData({ date }) {
   return (
     <div className="wrapper">
       {posts.length > 0 ? (
-        <div className="content">
-          {posts.map((post) => (
-            <div className="post">
-              <h2>{post.title}</h2>
-              <p>{post.body}</p>
-            </div>
-          ))}
-        </div>
+        console.log(posts)
       ) : (
         <p className="loading">Loading... </p>
       )}
