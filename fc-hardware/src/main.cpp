@@ -20,7 +20,7 @@ float gyro_X = 0;
 float gyro_X_error = 0.01;
 float Time_Now, Time_Previous, elapsedTime;
 
-char json_output[256];
+char json_output[2048];
 
 // used for waiting
 unsigned long start_time;
@@ -61,7 +61,7 @@ void setup(){
 
 void loop(){
 
-  StaticJsonDocument<512> doc;
+  StaticJsonDocument<2048> doc;
   JsonArray data = doc.createNestedArray("data");
 
   for (int i = 0; i < SIZE_OF_ARRAY; i++){
