@@ -67,6 +67,7 @@ def get_data(date):
 
         #return {'thing': values_array.tolist()}
 
+        #arrays
         good_pushups_top = []
         good_pushups_bot = []
         bad_pushups = []
