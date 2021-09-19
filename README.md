@@ -2,7 +2,9 @@
 Hack the North 2021
 
 https://devpost.com/software/jacked-the-north
+
 http://jackedthenorth.tech
+
 https://form-check-326415.web.app/home
 
 ## Inspiration
