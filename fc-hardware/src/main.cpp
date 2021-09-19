@@ -16,8 +16,9 @@ int onboardLED = 2;
 const int SIZE_OF_ARRAY = 50;
 
 // gyroscope settings
-float gyro_X;
+float gyro_X = 0;
 float gyro_X_error = 0.01;
+float Time_Now, Time_Previous, elapsedTime;
 
 char json_output[256];
 
@@ -68,17 +69,24 @@ void loop(){
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
 
-    float gyro_X_temp = g.gyro.x + 2.16;
-    if (abs(gyro_X_temp) > gyro_X_error){
-      gyro_X += (gyro_X_temp/50.00) * (180 / 3.1415);
+    Time_Previous = Time_Now;
+    Time_Now = millis();
+    elapsedTime = (Time_Now - Time_Previous)/1000;
+
+    float angular_velocity = (g.gyro.x+2.15115175);
+    if (abs(angular_velocity) > gyro_X_error){
+      gyro_X += angular_velocity*elapsedTime;
     }
 
-    data.add(gyro_X);
-    delay(200);
+    Serial.print(angular_velocity);
+    Serial.print("     ");
+    Serial.println(gyro_X);
+    //data.add(gyro_X);
+    delay(5);
   }
   serializeJson(doc, json_output);
   
-  post_request();
+  //post_request();
 
 }
 
