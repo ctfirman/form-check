@@ -53,9 +53,7 @@ function NavigationBar() {
     <div className={classes.root}>
       <AppBar position="static" className={classes.appBar}>
         <Toolbar>
-          <Button component={Link} to="/">
-            <img src={navBarPic} alt="JTN" className={classes.image} />
-          </Button>
+          <img src={navBarPic} alt="JTN" className={classes.image} />
           {location.pathname === "/" && (
             <>
               <Typography variant="h6" className={classes.text} color="inherit">
@@ -144,7 +142,7 @@ function NavigationBar() {
                 color="inherit"
                 startIcon={<TimelineIcon />}
               >
-                Investments
+                My Journey
               </Button>
             </>
           )}
